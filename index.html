@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>アカウント作成</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:#fff;
+overflow:hidden;
+width:100vw;
+height:100vh;
+}
+
+.screen{
+position:absolute;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+.panel{
+background:white;
+border:6px solid #0066ff;
+border-radius:25px;
+padding:40px;
+width:500px;
+max-width:90%;
+text-align:center;
+box-shadow:0 0 30px rgba(0,0,255,.3);
+}
+
+.title{
+font-size:38px;
+color:#0066ff;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+.text{
+font-size:20px;
+margin-bottom:30px;
+}
+
+.btn{
+background:linear-gradient(#ffd700,#ffb700);
+border:none;
+padding:12px 30px;
+margin:10px;
+font-size:18px;
+cursor:pointer;
+border-radius:999px;
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:10px 0;
+font-size:16px;
+}
+
+.hidden{
+display:none;
+}
+
+#freeze{
+background:white;
+color:black;
+font-size:40px;
+}
+
+.fadeBlack{
+position:absolute;
+inset:0;
+background:black;
+opacity:0;
+pointer-events:none;
+transition:8s;
+z-index:20;
+}
+
+#videoContainer{
+position:absolute;
+inset:0;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:50;
+}
+
+video{
+max-width:100%;
+max-height:100%;
+}
+
+#finalImage{
+position:absolute;
+top:20%;
+left:50%;
+transform:translateX(-50%);
+width:450px;
+opacity:0;
+transition:5s;
+}
+
+#dialog{
+position:absolute;
+top:70%;
+left:50%;
+transform:translateX(-50%);
+width:80%;
+text-align:center;
+color:red;
+font-size:34px;
+font-family:Georgia,serif;
+min-height:100px;
+}
+
+.cursor{
+display:inline-block;
+animation:blink .8s infinite;
+}
+
+@keyframes blink{
+50%{opacity:0;}
+}
+
+.blackScreen{
+position:absolute;
+inset:0;
+background:black;
+display:none;
+z-index:60;
+}
+</style>
+</head>
+<body>
+
+<audio id="bgm" loop>
+<source src="1781931971208.mp4">
+</audio>
+
+<div id="screen1" class="screen">
+<div class="panel">
+<div class="title">アカウント作成</div>
+<div class="text">アカウントを作りますか。</div>
+
+<button class="btn" onclick="startCreate()">はい</button>
+<button class="btn" onclick="freezeScreen()">いいえ</button>
+</div>
+</div>
+
+<div id="screen2" class="screen hidden">
+<div class="panel">
+<div class="title">アカウント作成</div>
+
+<input id="name" placeholder="名前">
+
+<input id="mail" type="email" placeholder="メールアドレス">
+
+<input id="birth" type="date">
+
+<select id="gender">
+<option value="">性別を選択</option>
+<option>男性</option>
+<option>女性</option>
+<option>その他</option>
+</select>
+
+<button class="btn" onclick="checkData()">確認</button>
+</div>
+</div>
+
+<div id="screen3" class="screen hidden">
+<div class="panel">
+<div class="title">最終確認</div>
+<div class="text">最終確認しますか？</div>
+<button class="btn" onclick="beginSequence()">はい</button>
+</div>
+</div>
+
+<div id="freeze" class="screen hidden"></div>
+
+<div id="fade" class="fadeBlack"></div>
+
+<div id="videoContainer">
+<video id="videoPlayer"></video>
+</div>
+
+<div id="blackEnd" class="blackScreen">
+<img id="finalImage" src="1781931962855.jpg">
+
+<div id="dialog"></div>
+</div>
+
+<script>
+
+const bgm=document.getElementById("bgm");
+
+function startCreate(){
+document.getElementById("screen1").classList.add("hidden");
+document.getElementById("screen2").classList.remove("hidden");
+
+bgm.volume=0.5;
+bgm.play().catch(()=>{});
+}
+
+function freezeScreen(){
+document.getElementById("screen1").classList.add("hidden");
+document.getElementById("freeze").classList.remove("hidden");
+}
+
+function checkData(){
+
+const name=document.getElementById("name").value.trim();
+const mail=document.getElementById("mail").value.trim();
+const birth=document.getElementById("birth").value;
+const gender=document.getElementById("gender").value;
+
+const mailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if(
+name.length<2 ||
+!mailPattern.test(mail) ||
+birth==="" ||
+gender===""){
+alert("正しい内容を入力してください。");
+return;
+}
+
+document.getElementById("screen2").classList.add("hidden");
+document.getElementById("screen3").classList.remove("hidden");
+}
+
+function beginSequence(){
+
+document.getElementById("screen3").classList.add("hidden");
+
+const fade=document.getElementById("fade");
+
+setTimeout(()=>{
+fade.style.opacity="1";
+},100);
+
+setTimeout(()=>{
+bgm.pause();
+playLaugh();
+},8500);
+
+}
+
+const videoContainer=document.getElementById("videoContainer");
+const player=document.getElementById("videoPlayer");
+
+function playLaugh(){
+
+videoContainer.style.display="flex";
+
+player.src="1781931973790.mp4";
+player.play();
+
+player.onended=()=>{
+playJansuke();
+};
+}
+
+function playJansuke(){
+
+player.src="1781932058353.mp4";
+player.play();
+
+player.onended=()=>{
+showEnding();
+};
+}
+
+function showEnding(){
+
+videoContainer.style.display="none";
+
+const black=document.getElementById("blackEnd");
+black.style.display="block";
+
+setTimeout(()=>{
+document.getElementById("finalImage").style.opacity="1";
+},3000);
+
+setTimeout(()=>{
+startDialogs();
+},7000);
+
+}
+
+const lines=[
+"There are no rules in this world.",
+"It never changes, no matter when or where.",
+"However, I am different.",
+"Just watching it.",
+"I think that is a very wonderful thing.",
+"Well then.",
+"Prepare for the next game round.",
+"Because we are always...",
+"Because you are there."
+];
+
+async function startDialogs(){
+
+for(let i=0;i<lines.length;i++){
+
+await typeLine(lines[i]);
+
+await wait(3000);
+
+document.getElementById("dialog").innerHTML="";
+}
+
+setTimeout(()=>{
+document.getElementById("blackEnd").style.transition="6s";
+document.getElementById("blackEnd").style.opacity="0";
+},2000);
+}
+
+function wait(ms){
+return new Promise(r=>setTimeout(r,ms));
+}
+
+function typeLine(text){
+
+return new Promise(resolve=>{
+
+const target=document.getElementById("dialog");
+
+let i=0;
+
+target.innerHTML="";
+
+const interval=setInterval(()=>{
+
+target.innerHTML=text.substring(0,i+1)
++'<span class="cursor">|</span>';
+
+i++;
+
+if(i>=text.length){
+
+clearInterval(interval);
+
+target.innerHTML=text;
+
+resolve();
+}
+
+},70);
+
+});
+}
+
+</script>
+
+</body>
+</html>
